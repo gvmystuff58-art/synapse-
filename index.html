@@ -48,18 +48,21 @@ font-weight:bold;
 
 <script type="module">
 
-// Firebase core
+// Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-// Auth
 import {
 getAuth,
 createUserWithEmailAndPassword,
 signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// Firestore (PROFILE)
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+getFirestore,
+doc,
+setDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // Config
 const firebaseConfig = {
@@ -88,7 +91,7 @@ createUserWithEmailAndPassword(auth, email, password)
 
 const user = userCredential.user;
 
-// CREATE PROFILE IN FIRESTORE
+// create profile
 await setDoc(doc(db, "users", user.uid), {
 username: "user_" + user.uid.slice(0,5),
 bio: "Hello Synapse"
@@ -111,9 +114,27 @@ const password = document.getElementById("password").value;
 
 signInWithEmailAndPassword(auth, email, password)
 
-.then(() => {
+.then(async (userCredential) => {
+
+const user = userCredential.user;
+
+// get profile
+const docRef = doc(db, "users", user.uid);
+const docSnap = await getDoc(docRef);
+
+if (docSnap.exists()) {
+
+const data = docSnap.data();
+
 document.getElementById("status").innerText =
-"Zalogowano!";
+"Zalogowano jako: " + data.username;
+
+} else {
+
+document.getElementById("status").innerText =
+"Zalogowano, ale brak profilu";
+}
+
 })
 
 .catch((error) => {
