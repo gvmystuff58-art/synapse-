@@ -1,35 +1,118 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <title>Synapse</title>
+
 <style>
-body {
-  background:#05070f;
-  color:#00ffe1;
-  text-align:center;
-  font-family:Arial;
-  padding-top:100px;
+body{
+background:#05070f;
+color:#00ffe1;
+font-family:Arial;
+text-align:center;
+padding-top:100px;
 }
-input,button {
-  padding:10px;
-  margin:5px;
-  width:200px;
+
+input{
+width:250px;
+padding:10px;
+margin:5px;
 }
-button {
-  background:#00ffe1;
-  border:none;
+
+button{
+padding:10px 20px;
+margin:5px;
+cursor:pointer;
 }
 </style>
 </head>
+
 <body>
 
 <h1>SYNAPSE</h1>
 
-<input placeholder="Email"><br>
-<input type="password" placeholder="Hasło"><br>
+<input id="email" type="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Hasło"><br>
 
-<button>Zarejestruj</button>
-<button>Zaloguj</button>
+<button onclick="register()">Zarejestruj</button>
+<button onclick="login()">Zaloguj</button>
+
+<p id="status"></p>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSyDBAzRDRzRWxEXViAP6ZSADdtjY2HPcR1g",
+authDomain: "synapsa01.firebaseapp.com",
+projectId: "synapsa01",
+storageBucket: "synapsa01.firebasestorage.app",
+messagingSenderId: "446017701524",
+appId: "1:446017701524:web:27bf69428f3c84103c9681"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.register = function() {
+
+const email =
+document.getElementById("email").value;
+
+const password =
+document.getElementById("password").value;
+
+createUserWithEmailAndPassword(
+auth,
+email,
+password
+)
+
+.then(() => {
+document.getElementById("status").innerText =
+"Konto utworzone!";
+})
+
+.catch((error) => {
+document.getElementById("status").innerText =
+error.message;
+});
+};
+
+window.login = function() {
+
+const email =
+document.getElementById("email").value;
+
+const password =
+document.getElementById("password").value;
+
+signInWithEmailAndPassword(
+auth,
+email,
+password
+)
+
+.then(() => {
+document.getElementById("status").innerText =
+"Zalogowano!";
+})
+
+.catch((error) => {
+document.getElementById("status").innerText =
+error.message;
+});
+};
+
+</script>
 
 </body>
 </html>
