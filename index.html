@@ -10,19 +10,26 @@ background:#05070f;
 color:#00ffe1;
 font-family:Arial;
 text-align:center;
-padding-top:100px;
+padding-top:80px;
 }
 
 input{
 width:250px;
 padding:10px;
 margin:5px;
+border-radius:8px;
+border:none;
 }
 
 button{
 padding:10px 20px;
 margin:5px;
 cursor:pointer;
+border-radius:8px;
+border:none;
+background:#00ffe1;
+color:#000;
+font-weight:bold;
 }
 </style>
 </head>
@@ -41,15 +48,20 @@ cursor:pointer;
 
 <script type="module">
 
+// Firebase core
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
+// Auth
 import {
 getAuth,
 createUserWithEmailAndPassword,
 signInWithEmailAndPassword
-}
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Firestore (PROFILE)
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// Config
 const firebaseConfig = {
 apiKey: "AIzaSyDBAzRDRzRWxEXViAP6ZSADdtjY2HPcR1g",
 authDomain: "synapsa01.firebaseapp.com",
@@ -59,47 +71,45 @@ messagingSenderId: "446017701524",
 appId: "1:446017701524:web:27bf69428f3c84103c9681"
 };
 
+// Init
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
+// REGISTER
 window.register = function() {
 
-const email =
-document.getElementById("email").value;
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
 
-const password =
-document.getElementById("password").value;
+createUserWithEmailAndPassword(auth, email, password)
 
-createUserWithEmailAndPassword(
-auth,
-email,
-password
-)
+.then(async (userCredential) => {
 
-.then(() => {
+const user = userCredential.user;
+
+// CREATE PROFILE IN FIRESTORE
+await setDoc(doc(db, "users", user.uid), {
+username: "user_" + user.uid.slice(0,5),
+bio: "Hello Synapse"
+});
+
 document.getElementById("status").innerText =
-"Konto utworzone!";
+"Konto + profil utworzone!";
 })
 
 .catch((error) => {
-document.getElementById("status").innerText =
-error.message;
+document.getElementById("status").innerText = error.message;
 });
 };
 
+// LOGIN
 window.login = function() {
 
-const email =
-document.getElementById("email").value;
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
 
-const password =
-document.getElementById("password").value;
-
-signInWithEmailAndPassword(
-auth,
-email,
-password
-)
+signInWithEmailAndPassword(auth, email, password)
 
 .then(() => {
 document.getElementById("status").innerText =
@@ -107,8 +117,7 @@ document.getElementById("status").innerText =
 })
 
 .catch((error) => {
-document.getElementById("status").innerText =
-error.message;
+document.getElementById("status").innerText = error.message;
 });
 };
 
